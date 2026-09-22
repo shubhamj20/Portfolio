@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { Play } from "lucide-react";
+import Image from "next/image";
 import { destinations } from "@/data/destinations";
 import { gsap, registerGsap } from "@/lib/animations";
 
@@ -48,17 +49,36 @@ export default function JourneySection({ onPlay }: Props) {
           </p>
         </div>
 
-        <div className="flex gap-5 overflow-x-auto no-scrollbar pb-4 snap-x snap-mandatory md:grid md:grid-cols-3 xl:grid-cols-6 md:overflow-visible">
+        <div className="flex gap-5 overflow-x-auto no-scrollbar pb-4 snap-x snap-mandatory md:grid md:grid-cols-2 xl:grid-cols-4 md:overflow-visible">
           {destinations.map((d) => (
             <button
               key={d.id}
               onClick={() => onPlay(d.id)}
               className="journey-card group relative flex-shrink-0 w-[240px] md:w-full snap-start aspect-[3/4] overflow-hidden border border-white/10 hover:border-gold/50 transition-colors duration-500 text-left"
-              style={{
-                background: `linear-gradient(160deg, ${d.color}40, #0a0d16 80%)`,
-              }}
             >
-              <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-500" />
+              {/* Real destination photo */}
+              {d.thumbnail && (
+                <Image
+                  src={d.thumbnail}
+                  alt={d.name}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  sizes="(max-width: 768px) 240px, (max-width: 1280px) 50vw, 25vw"
+                />
+              )}
+
+              {/* Fallback color gradient if no image yet */}
+              {!d.thumbnail && (
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: `linear-gradient(160deg, ${d.color}40, #0a0d16 80%)`,
+                  }}
+                />
+              )}
+
+              {/* Dark overlay for text legibility */}
+              <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-500" />
 
               <div className="absolute top-4 right-4 w-9 h-9 rounded-full border border-white/40 flex items-center justify-center backdrop-blur-sm bg-black/20 group-hover:bg-gold group-hover:border-gold group-hover:text-ink transition-all duration-300">
                 <Play size={12} className="fill-current translate-x-[1px]" />

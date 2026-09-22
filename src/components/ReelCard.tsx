@@ -2,6 +2,7 @@
 
 import { Play } from "lucide-react";
 import { useRef, useEffect, useState } from "react";
+import Image from "next/image";
 import type { Reel } from "@/data/reels";
 
 type Props = {
@@ -12,9 +13,9 @@ type Props = {
 export default function ReelCard({ reel, onPlay }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const cardRef = useRef<HTMLButtonElement>(null);
-  // src is empty until the card enters the viewport
   const [videoSrc, setVideoSrc] = useState<string>("");
   const [isHovering, setIsHovering] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
 
   // Lazy-load: assign src only once the card is visible on screen
   useEffect(() => {
@@ -26,11 +27,11 @@ export default function ReelCard({ reel, onPlay }: Props) {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setVideoSrc(reel.videoUrl);
-            observer.disconnect(); // only need to trigger once
+            observer.disconnect();
           }
         });
       },
-      { rootMargin: "200px" } // start loading slightly before card is visible
+      { rootMargin: "200px" }
     );
 
     observer.observe(card);
@@ -49,6 +50,7 @@ export default function ReelCard({ reel, onPlay }: Props) {
     if (videoRef.current) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
+      setVideoReady(false);
     }
   };
 
@@ -60,7 +62,20 @@ export default function ReelCard({ reel, onPlay }: Props) {
       onMouseLeave={handleMouseLeave}
       className="reel-card group relative w-full aspect-[4/5] overflow-hidden border border-white/10 hover:border-gold/50 transition-colors duration-500 text-left bg-charcoal"
     >
-      {/* Video — src is injected lazily; preload="none" avoids auto-buffering */}
+      {/* Poster image — shown immediately from the JPG extracted by FFmpeg */}
+      {reel.thumbnail && (
+        <Image
+          src={reel.thumbnail}
+          alt={reel.title}
+          fill
+          className={`object-cover transition-opacity duration-500 ${
+            videoReady && isHovering ? "opacity-0" : "opacity-100"
+          }`}
+          sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 20vw"
+        />
+      )}
+
+      {/* Video — lazy loaded, fades in over poster on hover */}
       {videoSrc && (
         <video
           ref={videoRef}
@@ -68,13 +83,11 @@ export default function ReelCard({ reel, onPlay }: Props) {
           muted
           playsInline
           preload="none"
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          onCanPlay={() => setVideoReady(true)}
+          className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${
+            videoReady && isHovering ? "opacity-100" : "opacity-0"
+          }`}
         />
-      )}
-
-      {/* Dark fill shown before video loads */}
-      {!videoSrc && (
-        <div className="absolute inset-0 bg-gradient-to-br from-charcoal to-ink" />
       )}
 
       {/* Gradient overlays */}
@@ -106,4 +119,5 @@ export default function ReelCard({ reel, onPlay }: Props) {
     </button>
   );
 }
+
 

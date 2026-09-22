@@ -38,10 +38,10 @@ function densifyRoute(points: [number, number][], perSegment = 40): [number, num
   return out;
 }
 
-const GLOBE_ZOOM = 2.5; // close enough that the globe fills most of the frame
+const GLOBE_ZOOM = 2.5;
 const DESTINATION_ZOOM = 6.4;
-const ROTATION_DEG_PER_SEC = 4; // gentle continuous spin
-const RESUME_ROTATION_DELAY_MS = 4000; // idle time after interaction before spin resumes
+const ROTATION_DEG_PER_SEC = 1.5; // slowed: fewer new tiles uncovered per second
+const RESUME_ROTATION_DELAY_MS = 4000;
 
 export default function IndiaMapbox({ activeId, onSelect }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -54,8 +54,9 @@ export default function IndiaMapbox({ activeId, onSelect }: Props) {
   const tokenMissing = !MAPBOX_TOKEN;
   const routeCoords = useRef<[number, number][]>(densifyRoute(buildRouteCoordinates()));
 
-  const rotationEnabledRef = useRef(true); // false whenever a destination is active
-  const rotationPausedRef = useRef(true); // starts true: held off until the entrance flyTo finishes
+  const rotationEnabledRef = useRef(true);
+  const rotationPausedRef = useRef(true);
+  const inViewRef = useRef(true); // pauses tile loading when scrolled away
   const resumeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const entranceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -87,6 +88,22 @@ export default function IndiaMapbox({ activeId, onSelect }: Props) {
     });
   }, []);
 
+  // Pause map tile loading when the hero is out of viewport
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        inViewRef.current = entry.isIntersecting;
+        // When coming back into view, resize in case layout shifted
+        if (entry.isIntersecting) mapRef.current?.resize();
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     if (!MAPBOX_TOKEN) return;
     if (!containerRef.current || mapRef.current) return;
@@ -97,15 +114,12 @@ export default function IndiaMapbox({ activeId, onSelect }: Props) {
       container: containerRef.current,
       style: "mapbox://styles/mapbox/satellite-streets-v12",
       projection: "globe",
-      // Starts zoomed further out than the resting GLOBE_ZOOM so the
-      // "load" handler below can fly the camera in for a cinematic
-      // entrance. Bearing is offset so the fly-in reads as motion
-      // rather than a static zoom.
       center: INDIA_CENTER,
       zoom: GLOBE_ZOOM - 2.2,
       pitch: 0,
       bearing: 30,
       maxPitch: 85,
+      maxZoom: 8,          // cap: prevents ultra-high-res tile loads on zoom-in
       antialias: true,
       attributionControl: false,
       logoPosition: "bottom-left",
@@ -131,17 +145,15 @@ export default function IndiaMapbox({ activeId, onSelect }: Props) {
     map.on("zoom", handleZoom);
 
     map.on("load", () => {
-      // 3D terrain
+      // Single DEM source shared by terrain + hillshade (was two separate sources before)
       map.addSource("mapbox-dem", {
         type: "raster-dem",
         url: "mapbox://mapbox.mapbox-terrain-dem-v1",
-        tileSize: 512,
-        maxzoom: 14,
+        tileSize: 256, // 256 vs 512: same visual at globe zoom, half the data
+        maxzoom: 10,   // was 14 — capped since we never zoom past 8 anyway
       });
       map.setTerrain({ source: "mapbox-dem", exaggeration: 1.6 });
 
-      // cinematic atmosphere — lighter than a vector-style dark map
-      // since satellite imagery already carries real-world tonal depth
       map.setFog({
         color: "rgb(20, 24, 34)",
         "high-color": "rgb(30, 42, 70)",
@@ -150,20 +162,12 @@ export default function IndiaMapbox({ activeId, onSelect }: Props) {
         "star-intensity": 0.3,
       });
 
-      // subtle hillshade to add extra depth to mountain ranges on top
-      // of the real satellite shading (kept light — satellite imagery
-      // already shows terrain relief from the source photography)
-      map.addSource("mapbox-dem-hillshade", {
-        type: "raster-dem",
-        url: "mapbox://mapbox.mapbox-terrain-dem-v1",
-        tileSize: 512,
-        maxzoom: 14,
-      });
+      // Reuse the same DEM source for hillshade — no extra tile fetches
       if (!map.getLayer("hillshade-cinematic")) {
         map.addLayer({
           id: "hillshade-cinematic",
           type: "hillshade",
-          source: "mapbox-dem-hillshade",
+          source: "mapbox-dem",
           paint: {
             "hillshade-exaggeration": 0.3,
             "hillshade-shadow-color": "#0a0e18",
@@ -266,7 +270,8 @@ export default function IndiaMapbox({ activeId, onSelect }: Props) {
       const deltaSec = (now - lastTime) / 1000;
       lastTime = now;
 
-      if (rotationEnabledRef.current && !rotationPausedRef.current) {
+      // Only rotate (and load tiles) when the hero is actually visible
+      if (rotationEnabledRef.current && !rotationPausedRef.current && inViewRef.current) {
         const center = map.getCenter();
         center.lng -= ROTATION_DEG_PER_SEC * deltaSec;
         map.setCenter(center);

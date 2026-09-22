@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { Mail, Menu, X } from "lucide-react";
 import { siteConfig } from "@/lib/config";
-import { InstagramIcon, YoutubeIcon } from "@/components/icons/SocialIcons";
+import { InstagramIcon } from "@/components/icons/SocialIcons";
+// import { YoutubeIcon } from "@/components/icons/SocialIcons"; // YouTube — hidden for now
 
 const NAV_LINKS = [
   { label: "Home", href: "#home" },
@@ -60,9 +61,11 @@ export default function Navbar() {
           <a href={siteConfig.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="text-white/60 hover:text-gold transition-colors">
             <InstagramIcon size={18} />
           </a>
+          {/* YouTube — hidden for now
           <a href={siteConfig.youtube} target="_blank" rel="noreferrer" aria-label="YouTube" className="text-white/60 hover:text-gold transition-colors">
             <YoutubeIcon size={18} />
           </a>
+          */}
           <a href={`mailto:${siteConfig.email}`} aria-label="Email" className="text-white/60 hover:text-gold transition-colors">
             <Mail size={18} />
           </a>
@@ -106,9 +109,11 @@ export default function Navbar() {
           <a href={siteConfig.instagram} target="_blank" rel="noreferrer" aria-label="Instagram">
             <InstagramIcon size={20} />
           </a>
+          {/* YouTube — hidden for now
           <a href={siteConfig.youtube} target="_blank" rel="noreferrer" aria-label="YouTube">
             <YoutubeIcon size={20} />
           </a>
+          */}
           <a href={`mailto:${siteConfig.email}`} aria-label="Email">
             <Mail size={20} />
           </a>

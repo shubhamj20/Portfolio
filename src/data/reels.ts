@@ -19,8 +19,8 @@ export const reels: Reel[] = [
     destination: "Kashmir",
     title: "Vale of Kashmir",
     projectType: "Travel Reel · Personal Project",
-    thumbnail: "",
-    videoUrl: "/videos/kashmir-reel.mp4",
+    thumbnail: "/images/reels/kashmir-1.jpg",
+    videoUrl: "https://wzkjhsptrvimggyxczza.supabase.co/storage/v1/object/public/portfolio-videos/kashmir-reel.mp4",
     techniques: ["Video Editing", "Color Grading", "Sound Design"],
   },
   {
@@ -28,8 +28,8 @@ export const reels: Reel[] = [
     destination: "Kashmir",
     title: "Kashmir Untamed",
     projectType: "Travel Reel · Personal Project",
-    thumbnail: "",
-    videoUrl: "/videos/kashmir-reel-2.mp4",
+    thumbnail: "/images/reels/kashmir-2.jpg",
+    videoUrl: "https://wzkjhsptrvimggyxczza.supabase.co/storage/v1/object/public/portfolio-videos/kashmir-reel-2.mp4",
     techniques: ["Video Editing", "Color Grading", "Storytelling"],
   },
   {
@@ -37,8 +37,8 @@ export const reels: Reel[] = [
     destination: "Kashmir",
     title: "Kashmir — Golden Hour",
     projectType: "Travel Reel · Personal Project",
-    thumbnail: "",
-    videoUrl: "/videos/kashmir-reel-4.mp4",
+    thumbnail: "/images/reels/kashmir-4.jpg",
+    videoUrl: "https://wzkjhsptrvimggyxczza.supabase.co/storage/v1/object/public/portfolio-videos/kashmir-reel-4.mp4",
     techniques: ["Color Grading", "Sound Design"],
   },
   {
@@ -46,8 +46,8 @@ export const reels: Reel[] = [
     destination: "Jodhpur",
     title: "Blue City Chronicles",
     projectType: "Travel Reel · Personal Project",
-    thumbnail: "",
-    videoUrl: "/videos/jodhpur-reel.mp4",
+    thumbnail: "/images/reels/jodhpur.jpg",
+    videoUrl: "https://wzkjhsptrvimggyxczza.supabase.co/storage/v1/object/public/portfolio-videos/jodhpur-reel.mp4",
     techniques: ["Video Editing", "Color Grading", "Storytelling"],
   },
   {
@@ -55,8 +55,8 @@ export const reels: Reel[] = [
     destination: "Tungnath",
     title: "Tungnath — Above the Clouds",
     projectType: "Travel Reel · Personal Project",
-    thumbnail: "",
-    videoUrl: "/videos/tungnath-reel.mp4",
+    thumbnail: "/images/reels/tungnath.jpg",
+    videoUrl: "https://wzkjhsptrvimggyxczza.supabase.co/storage/v1/object/public/portfolio-videos/tungnath-reel.mp4",
     techniques: ["Video Editing", "Color Grading", "Sound Design"],
   },
   {
@@ -64,8 +64,8 @@ export const reels: Reel[] = [
     destination: "India",
     title: "Cinematic India",
     projectType: "Cinematic Reel · Personal Project",
-    thumbnail: "",
-    videoUrl: "/videos/cinematic-reel.mp4",
+    thumbnail: "/images/reels/cinematic.jpg",
+    videoUrl: "https://wzkjhsptrvimggyxczza.supabase.co/storage/v1/object/public/portfolio-videos/cinematic-reel.mp4",
     techniques: ["Cinematic Editing", "Color Grading", "Motion Graphics"],
   },
   {
@@ -73,8 +73,8 @@ export const reels: Reel[] = [
     destination: "India",
     title: "Travel Diary",
     projectType: "Travel Reel · Personal Project",
-    thumbnail: "",
-    videoUrl: "/videos/cinematic-0423.mp4",
+    thumbnail: "/images/reels/diary.jpg",
+    videoUrl: "https://wzkjhsptrvimggyxczza.supabase.co/storage/v1/object/public/portfolio-videos/cinematic-0423.mp4",
     techniques: ["Video Editing", "Social Media Editing", "Color Grading"],
   },
   {
@@ -82,8 +82,9 @@ export const reels: Reel[] = [
     destination: "Spiti Valley",
     title: "Spiti — Land of the Lamas",
     projectType: "Travel Reel · Personal Project",
-    thumbnail: "",
-    videoUrl: "/videos/spiti-reel.mp4",
+    thumbnail: "/images/reels/spiti.jpg",
+    videoUrl: "https://wzkjhsptrvimggyxczza.supabase.co/storage/v1/object/public/portfolio-videos/spiti-reel.mp4",
     techniques: ["Video Editing", "Color Grading", "Sound Design"],
   },
 ];
+

@@ -24,7 +24,7 @@ export const destinations: Destination[] = [
     region: "North India",
     position: [74.7973, 34.0837], // Srinagar
     color: "#7ab8d4",
-    thumbnail: "/images/destinations/kashmir.jpg",
+    thumbnail: "/images/destinations/kashmir.jpeg",
     description:
       "Snow-capped peaks, shikara-dotted lakes and breathtaking valley light.",
     techniques: ["Video Editing", "Color Grading", "Sound Design"],
@@ -60,7 +60,7 @@ export const destinations: Destination[] = [
     region: "Himachal Pradesh",
     position: [78.0321, 32.2432], // Kaza, Spiti
     color: "#b89e6a",
-    thumbnail: "/images/destinations/spiti.jpg",
+    thumbnail: "/images/destinations/spiti.jpeg",
     description:
       "A cold desert mountain valley — stark, raw and hauntingly beautiful.",
     techniques: ["Video Editing", "Color Grading", "Sound Design"],
