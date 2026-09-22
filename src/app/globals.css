@@ -1,0 +1,161 @@
+@import "tailwindcss";
+
+:root {
+  --color-ink: #05060a;
+  --color-ink-2: #0a0d16;
+  --color-ink-3: #10141f;
+  --color-navy: #0c1220;
+  --color-charcoal: #14161c;
+  --color-gold: #e0a54b;
+  --color-gold-2: #f2c879;
+  --color-gold-dim: #8a6a34;
+  --color-white-dim: rgba(255, 255, 255, 0.72);
+  --color-white-faint: rgba(255, 255, 255, 0.45);
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-gold: rgba(224, 165, 75, 0.35);
+}
+
+@theme inline {
+  --color-ink: var(--color-ink);
+  --color-ink-2: var(--color-ink-2);
+  --color-ink-3: var(--color-ink-3);
+  --color-navy: var(--color-navy);
+  --color-charcoal: var(--color-charcoal);
+  --color-gold: var(--color-gold);
+  --color-gold-2: var(--color-gold-2);
+  --color-gold-dim: var(--color-gold-dim);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-script: var(--font-script);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-ink);
+  color: #fff;
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display), ui-sans-serif, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.font-script {
+  font-family: var(--font-script), cursive;
+}
+
+/* Film grain overlay */
+.grain-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1s steps(4) infinite;
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-1%, 1%); }
+  50% { transform: translate(1%, -1%); }
+  75% { transform: translate(-1%, -1%); }
+}
+
+::selection {
+  background: var(--color-gold);
+  color: #05060a;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-ink);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-gold-dim);
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold);
+}
+
+.text-gold-gradient {
+  background: linear-gradient(90deg, var(--color-gold-2), var(--color-gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.section-eyebrow {
+  font-family: var(--font-body), sans-serif;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: var(--color-gold);
+}
+
+.glass {
+  background: rgba(20, 22, 28, 0.5);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--color-border);
+}
+
+.gold-border {
+  border: 1px solid var(--color-border-gold);
+}
+
+.divider-gold {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-gold-dim), transparent);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Mapbox GL overrides — strip default chrome so the hero map reads as
+   a bespoke cinematic scene rather than a generic embedded map widget. */
+
+/* Mapbox's own stylesheet gives .mapboxgl-map only `position: relative`
+   with no explicit height, so it collapses to 0 unless forced to fill
+   the container div we mount it into. */
+.mapboxgl-map,
+.mapboxgl-canvas-container {
+  width: 100% !important;
+  height: 100% !important;
+}
+.mapboxgl-ctrl-logo,
+.mapboxgl-ctrl-attrib {
+  display: none !important;
+}
+.mapboxgl-marker {
+  z-index: 5;
+}
+.map-plane-marker {
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px rgba(242, 200, 121, 0.8));
+}
+.mapboxgl-canvas {
+  outline: none;
+}
