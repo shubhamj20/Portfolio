@@ -141,6 +141,8 @@ export default function IndiaMapbox({ activeId, onSelect }: Props) {
     resizeObserver.observe(containerRef.current);
     resizeObserverRef.current = resizeObserver;
 
+    // Defined at effect scope (not inside `load`) so the cleanup can
+    // reference the exact same function object and actually remove it.
     const handleZoom = () => setZoomLevel(map.getZoom());
     map.on("zoom", handleZoom);
 
@@ -234,7 +236,15 @@ export default function IndiaMapbox({ activeId, onSelect }: Props) {
     return () => {
       resizeObserverRef.current?.disconnect();
       resizeObserverRef.current = null;
-      if (entranceTimerRef.current) clearTimeout(entranceTimerRef.current);
+      // Clear both timers so they don't fire against a destroyed map instance.
+      if (entranceTimerRef.current) {
+        clearTimeout(entranceTimerRef.current);
+        entranceTimerRef.current = null;
+      }
+      if (resumeTimeoutRef.current) {
+        clearTimeout(resumeTimeoutRef.current);
+        resumeTimeoutRef.current = null;
+      }
       map.off("zoom", handleZoom);
       map.remove();
       mapRef.current = null;

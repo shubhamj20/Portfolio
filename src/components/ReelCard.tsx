@@ -11,13 +11,23 @@ type Props = {
 };
 
 export default function ReelCard({ reel, onPlay }: Props) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const cardRef = useRef<HTMLButtonElement>(null);
-  const [videoSrc, setVideoSrc] = useState<string>("");
+  const videoRef  = useRef<HTMLVideoElement>(null);
+  const cardRef   = useRef<HTMLButtonElement>(null);
+  const mountedRef = useRef(true); // guards against setState after unmount
+  const [videoSrc,   setVideoSrc]   = useState<string>("");
   const [isHovering, setIsHovering] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
 
-  // Lazy-load: assign src only once the card is visible on screen
+  // Track mount state so the IntersectionObserver callback never calls
+  // setState on an already-unmounted component.
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  // Lazy-load: assign src only once the card is visible on screen.
   useEffect(() => {
     const card = cardRef.current;
     if (!card) return;
@@ -25,7 +35,7 @@ export default function ReelCard({ reel, onPlay }: Props) {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
+          if (entry.isIntersecting && mountedRef.current) {
             setVideoSrc(reel.videoUrl);
             observer.disconnect();
           }
@@ -38,9 +48,27 @@ export default function ReelCard({ reel, onPlay }: Props) {
     return () => observer.disconnect();
   }, [reel.videoUrl]);
 
+  // Cleanup the video element when the component unmounts or src changes.
+  // Resetting src + calling load() aborts any in-flight network request
+  // for the video, preventing the browser from continuing to buffer a
+  // video that no longer has a consumer — the primary memory/network leak.
+  useEffect(() => {
+    const video = videoRef.current;
+    return () => {
+      if (video) {
+        video.pause();
+        video.src = "";
+        video.load(); // abort pending fetch
+      }
+    };
+  }, [videoSrc]);
+
   const handleMouseEnter = () => {
     setIsHovering(true);
-    if (videoRef.current && videoSrc) {
+    // Play is driven by the onCanPlay handler below; calling play() here
+    // before the video is ready would generate an interrupted-play error.
+    // We only nudge play() if the video already declared itself ready.
+    if (videoRef.current && videoSrc && videoReady) {
       videoRef.current.play().catch(() => {});
     }
   };
@@ -51,6 +79,16 @@ export default function ReelCard({ reel, onPlay }: Props) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
       setVideoReady(false);
+    }
+  };
+
+  const handleCanPlay = () => {
+    if (!mountedRef.current) return;
+    setVideoReady(true);
+    // Auto-play the preview if the user is already hovering when the
+    // video becomes ready (e.g., slow connections).
+    if (isHovering && videoRef.current) {
+      videoRef.current.play().catch(() => {});
     }
   };
 
@@ -83,7 +121,7 @@ export default function ReelCard({ reel, onPlay }: Props) {
           muted
           playsInline
           preload="none"
-          onCanPlay={() => setVideoReady(true)}
+          onCanPlay={handleCanPlay}
           className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${
             videoReady && isHovering ? "opacity-100" : "opacity-0"
           }`}
@@ -119,5 +157,3 @@ export default function ReelCard({ reel, onPlay }: Props) {
     </button>
   );
 }
-
-

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import type { Reel } from "@/data/reels";
 
@@ -10,16 +10,24 @@ type Props = {
 };
 
 export default function ReelModal({ reel, onClose }: Props) {
+  // Keep a stable ref to `onClose` so the keydown listener is registered only
+  // once per reel open, not on every parent render (which would cause the
+  // handler to be removed + re-added on every render — a classic memory leak).
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  });
+
   useEffect(() => {
     if (!reel) return;
     document.body.style.overflow = "hidden";
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onCloseRef.current();
     window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
     };
-  }, [reel, onClose]);
+  }, [reel]); // ← onClose intentionally excluded; the ref keeps it current
 
   if (!reel) return null;
 
