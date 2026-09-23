@@ -18,7 +18,6 @@ const WhyWorkWithMe  = dynamic(() => import("@/components/WhyWorkWithMe"),  { ss
 const ClientTypes    = dynamic(() => import("@/components/ClientTypes"),    { ssr: false });
 const Process        = dynamic(() => import("@/components/Process"),        { ssr: false });
 const Tools          = dynamic(() => import("@/components/Tools"),          { ssr: false });
-const Testimonials   = dynamic(() => import("@/components/Testimonials"),   { ssr: false });
 const FinalCTA       = dynamic(() => import("@/components/FinalCTA"),       { ssr: false });
 const Contact        = dynamic(() => import("@/components/Contact"),        { ssr: false });
 const Footer         = dynamic(() => import("@/components/Footer"),         { ssr: false });
@@ -48,7 +47,6 @@ export default function Home() {
         <ClientTypes />
         <Process />
         <Tools />
-        <Testimonials />
         <FinalCTA />
         <Contact />
       </main>
